@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> Depression Assessment</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    #phq9-container {
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      font-size: 24px;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-size: 16px;
+      color: #555;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    #submit-btn {
+      background-color: #007bff;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #submit-btn:hover {
+      background-color: #0056b3;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div id="phq9-container">
+    <h1>Depression Assessment</h1>
+    <div id="questions">
+      <!-- PHQ-9 questions will be inserted here dynamically -->
+    </div>
+    <button id="submit-btn">Submit</button>
+    <div id="result">
+      <!-- Assessment result will be displayed here dynamically -->
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      "Little interest or pleasure in doing things?",
+      "Feeling down, depressed, or hopeless?",
+      "Trouble falling or staying asleep, or sleeping too much?",
+      "Feeling tired or having little energy?",
+      "Poor appetite or overeating?",
+      "Feeling bad about yourself — or that you are a failure or have let yourself or your family down?",
+      "Trouble concentrating on things, such as reading the newspaper or watching television?",
+      "Moving or speaking so slowly that other people could have noticed? Or the opposite — being so fidgety or restless that you have been moving around a lot more than usual?",
+      "Thoughts that you would be better off dead, or of hurting yourself in some way?"
+    ];
+
+    let score = 0;
+
+    function createQuestionElement(question, index) {
+      const div = document.createElement('div');
+      div.innerHTML = `
+        <label>${question}</label>
+        <select id="q${index}">
+          <option value="0">Not at all</option>
+          <option value="1">Several days</option>
+          <option value="2">More than half the days</option>
+          <option value="3">Nearly every day</option>
+        </select>
+      `;
+      return div;
+    }
+
+    function displayQuestions() {
+      const questionsDiv = document.getElementById('questions');
+      questions.forEach((question, index) => {
+        questionsDiv.appendChild(createQuestionElement(question, index + 1));
+      });
+    }
+
+    function calculateScore() {
+      score = 0;
+      for (let i = 0; i < questions.length; i++) {
+        const value = parseInt(document.getElementById(`q${i+1}`).value);
+        score += value;
+      }
+    }
+
+    function displayResult() {
+      const resultDiv = document.getElementById('result');
+      if (score < 5) {
+        resultDiv.textContent = "You have minimal depressive symptoms.";
+      } else if (score < 10) {
+        resultDiv.textContent = "You have mild depressive symptoms. Consider seeking support if symptoms persist.";
+      } else if (score < 15) {
+        resultDiv.textContent = "You have moderate depressive symptoms. Seeking professional help is recommended.";
+      } else {
+        resultDiv.textContent = "You have severe depressive symptoms. Immediate professional intervention is advised.";
+      }
+    }
+
+    window.onload = function() {
+      displayQuestions();
+      document.getElementById('submit-btn').addEventListener('click', function() {
+        calculateScore();
+        displayResult();
+      });
+    };
+  </script>
+</body>
+</html>
