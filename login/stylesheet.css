@@ -1,0 +1,22 @@
+
+.center { width: 900px; 
+    margin: 200px auto 0px auto; 
+}
+body {
+ 	margin: 0;
+    padding: 0;
+  background-image: url('./bggg.jpg');
+  background-size: cover;
+  background-position: center;
+  
+  backdrop-filter: blur(5px); /* Apply backdrop blur */
+}
+.form-container {
+  background-color: rgba(205, 235, 236, 0.9); /* Semi-transparent white background */
+  border-radius: 20px; /* Rounded corners */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  padding: 40px; /* Adjust padding */
+  width: 90%; /* Take up 90% of the container's width */
+  max-width: 400px; /* Set maximum width */
+  margin: 20px; /* Add margin for spacing */
+}
