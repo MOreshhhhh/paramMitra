@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Interface</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        .chatbot-toggler {
+            position: fixed;
+            bottom: 30px;
+            right: 35px;
+            outline: none;
+            border: none;
+            height: 50px;
+            width: 50px;
+            display: flex;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #cf074a;
+            transition: all 0.2s ease;
+        }
+        body.show-chatbot .chatbot-toggler {
+            transform: rotate(90deg);
+        }
+        .chatbot-toggler span {
+            color: rgb(255, 224, 45);
+            position: absolute;
+        }
+        .chatbot-toggler span:last-child,
+        body.show-chatbot .chatbot-toggler span:first-child  {
+            opacity: 0;
+        }
+        body.show-chatbot .chatbot-toggler span:last-child {
+            opacity: 1;
+        }
+        .chatbot {
+            position: fixed;
+            right: 35px;
+            bottom: 90px;
+            width: 420px;
+            background: rgb(204, 248, 146);
+            border-radius: 15px;
+            overflow: hidden;
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.5);
+            transform-origin: bottom right;
+            box-shadow: 0 0 128px 0 rgba(255, 7, 7, 0.1),
+                        0 32px 64px -48px rgba(0,0,0,0.5);
+            transition: all 0.1s ease;
+        }
+        body.show-chatbot .chatbot {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+        }
+        .chatbot header {
+            padding: 10px 0;
+            position: relative;
+            text-align: center;
+            color: rgba(194, 190, 190, 0.644);
+            background: #724ae8;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .chatbot header span {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            display: none;
+            cursor: pointer;
+            transform: translateY(-50%);
+        }
+        .chatbox {
+            padding: 20px;
+        }
+        .chatbox h1 {
+            font-size: 24px;
+            text-align: center;
+        }
+        .output {
+            min-height: 200px;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            overflow-y: auto;
+        }
+        .input-container {
+            display: flex;
+            align-items: center;
+        }
+        .input-container input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        .input-container input[type="submit"],
+        .input-container input[type="reset"] {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+    <SCRIPT LANGUAGE="JavaScript" TYPE="text/javascript" SRC="elizabot.js"></SCRIPT>
+    <SCRIPT LANGUAGE="JavaScript" TYPE="text/javascript" SRC="elizadata.js"></SCRIPT>
+    <SCRIPT LANGUAGE="JavaScript" TYPE="text/javascript">
+        var eliza = new ElizaBot();
+        var elizaLines = new Array();
+        
+        var displayCols = 60;
+        var displayRows = 20;
+        
+        function elizaReset() {
+            eliza.reset();
+            elizaLines.length = 0;
+            elizaStep();
+        }
+        
+        function elizaStep() {
+            var f = document.forms.e_form;
+            var userinput = f.e_input.value;
+            if (eliza.quit) {
+                f.e_input.value = '';
+                if (confirm("This session is over.\nStart over?")) elizaReset();
+                f.e_input.focus();
+                return;
+            }
+            else if (userinput != '') {
+                var usr = 'YOU:   ' + userinput;
+                var rpl ='PARAM MITRA: ' + eliza.transform(userinput);
+                elizaLines.push(usr);
+                elizaLines.push(rpl);
+                var temp  = new Array();
+                var l = 0;
+                for (var i=elizaLines.length-1; i>=0; i--) {
+                    l += 1 + Math.floor(elizaLines[i].length/displayCols);
+                    if (l >= displayRows) break
+                    else temp.push(elizaLines[i]);
+                }
+                elizaLines = temp.reverse();
+                f.e_display.value = elizaLines.join('\n');
+            }
+            else if (elizaLines.length == 0) {
+                var initial = 'Param Mitra: ' + eliza.getInitial();
+                elizaLines.push(initial);
+                f.e_display.value = initial + '\n';
+            }
+            f.e_input.value = '';
+            f.e_input.focus();
+        }
+
+        function toggleChatbot() {
+            var body = document.body;
+            body.classList.toggle('show-chatbot');
+        }
+    </SCRIPT>
+</head>
+<body>
+
+    <button class="chatbot-toggler" onclick="toggleChatbot()">
+        <span>Open</span>
+        <span>Close</span>
+    </button>
+
+    <div class="chatbot">
+        <header>
+            <h3>PARAM MITRA</h3>
+            <span onclick="toggleChatbot()">Close</span>
+        </header>
+        <div class="chatbox">
+            <form name="e_form" onsubmit="elizaStep(); return false">
+                <div class="output"><TEXTAREA NAME="e_display" COLS="45" ROWS="25" readonly style="resize: none;"></TEXTAREA></div>
+                <div class="input-container">
+                    <input type="text" name="e_input" size="50" placeholder="Type your message...">
+                    <input type="submit" value="Talk">
+                    <input type="reset" value="Reset" onclick="window.setTimeout('elizaReset()',100)">
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Search Example</title>
+    <style>
+        #searchResults {
+            margin-top: 20px;
+        }
+        .result {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .result h3 {
+            margin-top: 0;
+        }
+        .result p {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <input type="text" id="searchInput" placeholder="Enter your search query">
+    <button onclick="search()">Search</button>
+    <section id="searchResults"></section>
+
+    <script>
+        function search() {
+            var query = document.getElementById("searchInput").value;
+            var apiKey = 'your api key here'; // Replace with your Custom Search API key
+            var cx = 'your custom search engine id here'; // Replace with your Custom Search Engine ID
+            var url = `https://www.googleapis.com/customsearch/v1?q=${query}&cx=${cx}&key=${apiKey}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    displayResults(data.items);
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        }
+
+        function displayResults(results) {
+            var section = document.getElementById("searchResults");
+            section.innerHTML = ""; // Clear previous results
+
+            var mentalHealthResults = results.filter(result => {
+                // Check if the title or snippet contains mental health-related keywords
+                return isMentalHealthRelated(result.title) || isMentalHealthRelated(result.snippet);
+            });
+
+            if (mentalHealthResults.length === 0) {
+                section.innerHTML = "<p>No mental health-related results found.</p>";
+            } else {
+                mentalHealthResults.forEach(result => {
+                    var title = result.title;
+                    var snippet = result.snippet;
+                    var link = result.link;
+
+                    var resultElement = document.createElement("div");
+                    resultElement.classList.add("result");
+                    resultElement.innerHTML = `<h3><a href="${link}" target="_blank">${title}</a></h3>
+                                               <p>${snippet}</p>`;
+                    section.appendChild(resultElement);
+                });
+            }
+        }
+
+        // Function to check if the text contains mental health-related keywords
+        function isMentalHealthRelated(text) {
+            var mentalHealthKeywords = ["mental health", "depression", "anxiety", "stress", "wellness", "psychological", "therapy", "counseling"]; // Add more keywords as needed
+            var regex = new RegExp(mentalHealthKeywords.join("|"), "i");
+            return regex.test(text);
+        }
+    </script>
+</body>
+</html>
